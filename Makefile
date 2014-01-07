@@ -32,6 +32,10 @@ BIN=bin
 #
 LIB=$(PWD)/lib
 
+# Build directory - where build artifacts are stored.
+#
+BUILD ?= .
+
 RM=rm -f
 CC=gcc
 CLD=gcc -O3 -L/usr/local/lib -L/opt/local/lib
@@ -543,10 +547,13 @@ VERE_OFILES=\
 
 LIBUV=outside/libuv/libuv.a
 
-all: $(BIN)/vere
+xall: $(BIN)/vere
 
 $(LIBUV): 
 	$(MAKE) -C outside/libuv
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $(LDFLAGS) -o $(BUILD)/$@ $^
 
 $(BIN)/vere: $(VERE_OFILES) $(LIBUV)
 	mkdir -p $(BIN)
