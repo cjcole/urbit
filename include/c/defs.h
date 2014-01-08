@@ -2,12 +2,18 @@
 **
 ** This file is in the public domain.
 */
+#ifdef LENG_URBIT_COMPAT
+#include "leng-defs.h"
+#endif
+
   /** Random useful C macros.
   **/
     /* Assert.  Good to capture.
     */
 // #     define c3_assert(x)   assert(x)
+#ifndef LENG_URBIT_COMPAT
 #     define c3_assert(x)  ( (x) ? 0 : c3_cooked(), assert(x) )
+#endif
 
     /* Stub.
     */
