@@ -1012,13 +1012,6 @@
       u2_noun
       u2_cm_frop();
 
-    /* u2_cm_slab():
-    **
-    **   Create a blank atomic slab of `len` words.
-    */
-      u2_ray
-      u2_cm_slab(c3_w len_w);
-
     /* u2_cm_slaq():
     **
     **   Create a blank atomic slab of `len` bloqs of size `met`.
@@ -1076,15 +1069,6 @@
     */
       void
       u2_cm_rfree(u2_ray nov_r);
-
-  /* u2_cp: profiling and debugging.
-  **
-  **   Profiling information is automatically cleared on each 
-  */
-    /* u2_cm_slab(): produce profiling record.
-    */
-      u2_noun
-      u2_cm_slab();
 
   /* u2_ck: kernel and related functions
   **

@@ -2,6 +2,10 @@
 **
 ** This file is in the public domain.
 */
+#ifdef LENG_URBIT_COMPAT
+#include "leng-loom.h"
+#endif
+
   /** Global variables and definitions.
   **/
 #   define Loom ((c3_w *)U2_OS_LoomBase)
@@ -127,12 +131,14 @@
     ***         a: ray to struct u2_atom
     ***         b: allocated bit (0 == fixed, 1 == allocated)
     **/
+#ifndef LENG_URBIT_COMPAT
       typedef c3_w u2_nit;
       typedef c3_w u2_ray;
       typedef c3_w u2_fly;
       typedef c3_w u2_dog;
       typedef c3_w u2_cat;
       typedef c3_w u2_pug;
+#endif
 
     /** Structures.
     ***
@@ -157,6 +163,7 @@
   **/
     /** Bitfield unpacking.  See above.
     **/
+#ifndef LENG_URBIT_COMPAT
 #     define u2_ray_a(ray)     ( (ray) >> HalfBits )
 #     define u2_ray_b(ray)     ( (ray) & ((1 << HalfBits) - 1) )
 
@@ -179,9 +186,10 @@
 
 #     define u2_dog_is_all(dog) ( u2_dog_b(dog) )
 
+#ifndef LENG_URBIT_COMPAT
 #     define u2_fly_is_atom(a) \
         (u2_fly_is_cat(a) || u2_dog_is_pug(a))
-       
+#endif       
 
     /** Bitfield packing.  See above.
     **/
@@ -277,6 +285,7 @@
 
 #     define u2_atom_word(a, b) \
         ( u2_fly_is_cat(a) ? (b ? 0 : (a)) : *u2_at_pug_buf(a, b) )
+#endif // #ifndef LENG_URBIT_COMPAT
 
     /*** Word axis macros.
     ****
@@ -306,10 +315,13 @@
     **
     **   An exceptional value, comparable to NaN for floats.
     */
+#ifndef LENG_URBIT_COMPAT
 #     define u2_none u2_dog_of(u2_ray_of(0, 0), 0, 0)
+#endif
 
     /* Small atoms.
     */
+#ifndef LENG_URBIT_COMPAT
 #     define _0   0
 #     define _1   1
 #     define _2   2
@@ -326,6 +338,7 @@
 #     define _13  13
 #     define _14  14
 #     define _15  15
+#endif // #ifndef LENG_URBIT_COMPAT
 
     /* Nock operators.
     */
@@ -380,14 +393,19 @@
     **
     **   Our Martian booleans and list terminator; empty string.
     */
+#ifndef LENG_URBIT_COMPAT
 #     define u2_yes   0
 #     define u2_no    1
 #     define u2_nul   0
 #     define u2_blip  0
+#endif // #ifndef LENG_URBIT_COMPAT
 
     /* Tools for Martian booleans.
     */
-#     define u2_so(x)      (u2_yes == (x))
+#ifndef LENG_URBIT_COMPAT
+#     define u2_eq(x, y)   ( (x) == (y) )
+#endif
+#     define u2_so(x)      ( u2_eq(u2_yes, x) )
 #     define u2_say(x)     ( (x) ? u2_yes : u2_no )
 #     define u2_not(x)     ( (x == u2_yes) ? u2_no : u2_yes )
 #     define u2_and(x, y)  ( (u2_so(x) && u2_so(y)) ? u2_yes : u2_no )
@@ -850,7 +868,7 @@
 #if 0
           u2_noun
           u2_h(u2_noun a);
-#else
+#elif !defined(LENG_URBIT_COMPAT)
 #         define u2_h(a)    (*u2_at_pom_hed(a))
 #endif
           u2_noun
@@ -863,7 +881,7 @@
 #if 0
           u2_noun
           u2_t(u2_noun a);
-#else
+#elif !defined(LENG_URBIT_COMPAT)
 #         define u2_t(a) (*u2_at_pom_tel(a))
 #endif
           u2_noun

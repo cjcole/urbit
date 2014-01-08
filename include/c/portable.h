@@ -7,7 +7,9 @@
 #    ifndef __GNUC__
 #      error "port me"
 #    endif
-#    define _GNU_SOURCE
+#    ifndef _GNU_SOURCE
+#      define _GNU_SOURCE
+#    endif
 
 
   /** System include files.

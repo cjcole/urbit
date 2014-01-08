@@ -36,6 +36,10 @@ LIB=$(PWD)/lib
 #
 BUILD ?= .
 
+# Source directory
+#
+SRC ?= .
+
 RM=rm -f
 CC=gcc
 CLD=gcc -O3 -L/usr/local/lib -L/opt/local/lib
@@ -61,6 +65,7 @@ GENERATED=generated
 DEFINES=-DU2_OS_$(OS) -DU2_OS_ENDIAN_$(ENDIAN) -D U2_LIB=\"$(LIB)\"
 
 CFLAGS=-O3 \
+        $(LENG_CFLAGS) \
 	-I/usr/local/include \
 	-I/opt/local/include \
 	-I$(INCLUDE)  \
@@ -553,7 +558,7 @@ $(LIBUV):
 	$(MAKE) -C outside/libuv
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $(LDFLAGS) -o $(BUILD)/$@ $^
+	$(CC) -c $(CFLAGS) $(LDFLAGS) -o $(BUILD)/$@ $(SRC)/$^
 
 $(BIN)/vere: $(VERE_OFILES) $(LIBUV)
 	mkdir -p $(BIN)
