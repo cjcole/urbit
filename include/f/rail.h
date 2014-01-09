@@ -2,6 +2,10 @@
 **
 ** This file is in the public domain.
 */
+#ifdef LENG_URBIT_COMPAT
+#include "leng-rail.h"
+#endif
+
   /** Configurations.
   **/
 #   undef U2_LEAK_DEBUG
@@ -18,11 +22,15 @@
     **/
       /* u2_rail: an allocation control frame.
       */
+#ifndef LENG_URBIT_COMPAT
         typedef u2_ray u2_rail;
+#endif
 
       /* u2_wire: an execution context, inheriting rail
       */
+#ifndef LENG_URBIT_COMPAT
         typedef u2_ray u2_wire;
+#endif
 
     /** Structures - in loom space.
     **/
