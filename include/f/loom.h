@@ -402,9 +402,6 @@
 
     /* Tools for Martian booleans.
     */
-#ifndef LENG_URBIT_COMPAT
-#     define u2_eq(x, y)   ( (x) == (y) )
-#endif
 #     define u2_so(x)      ( u2_eq(u2_yes, x) )
 #     define u2_say(x)     ( (x) ? u2_yes : u2_no )
 #     define u2_not(x)     ( (x == u2_yes) ? u2_no : u2_yes )
