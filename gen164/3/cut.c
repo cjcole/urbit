@@ -15,19 +15,21 @@
                    u2_atom d)                                     //  retain
   {
     if ( !u2_fly_is_cat(a) || (a >= 32) ) {
+      //XXX: 32
       return u2_bl_bail(wir_r, c3__fail);
     }
     if ( !u2_fly_is_cat(b) ) {
       return _0;
     }
     if ( !u2_fly_is_cat(c) ) {
+      //XXX: 0x7fffffff
       c = 0x7fffffff;
     }
 
     {
-      c3_g a_g   = a;
-      c3_w b_w   = b;
-      c3_w c_w   = c;
+      c3_g a_g   = (c3_g)a;
+      c3_w b_w   = b; //XXX!
+      c3_w c_w   = c; //XXX!
       c3_w len_w = u2_met(a_g, d);
 
       if ( (_0 == c_w) || (b_w >= len_w) ) {

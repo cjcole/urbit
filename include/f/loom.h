@@ -186,10 +186,8 @@
 
 #     define u2_dog_is_all(dog) ( u2_dog_b(dog) )
 
-#ifndef LENG_URBIT_COMPAT
 #     define u2_fly_is_atom(a) \
         (u2_fly_is_cat(a) || u2_dog_is_pug(a))
-#endif       
 
     /** Bitfield packing.  See above.
     **/
@@ -402,7 +400,7 @@
 
     /* Tools for Martian booleans.
     */
-#     define u2_so(x)      ( u2_eq(u2_yes, x) )
+#     define u2_so(x)      ( u2_yes == x )
 #     define u2_say(x)     ( (x) ? u2_yes : u2_no )
 #     define u2_not(x)     ( (x == u2_yes) ? u2_no : u2_yes )
 #     define u2_and(x, y)  ( (u2_so(x) && u2_so(y)) ? u2_yes : u2_no )
