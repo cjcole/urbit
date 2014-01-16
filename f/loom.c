@@ -811,29 +811,28 @@ u2_mug(u2_noun veb)
     c3_w x_w = u2_cat_a(veb);
 
     return _mug_words(2166136261, (veb ? 1 : 0), &x_w);
+  } else if ( u2_dog_is_pom(veb) ) {
+    if ( *u2_at_dog_mug(veb) ) {
+      return *u2_at_dog_mug(veb);
+    }
+    else {
+      u2_noun hed = *u2_at_pom_hed(veb);
+      u2_noun tel = *u2_at_pom_tel(veb);
+      c3_w mug_w = u2_mug_cell(hed, tel);
+
+      *u2_at_dog_mug(veb) = mug_w;
+      return mug_w;
+    }
   } else {
     u2_dat veb_dat;
     u2_crac(veb, &veb_dat);
     
     if ( *u2_at_dat_mug(&veb_dat) ) {
-      c3_w mug_w = *u2_at_dat_mug(&veb_dat);
-
-      return mug_w;
+      return *u2_at_dat_mug(&veb_dat);
     }
     else {
-      c3_w mug_w;
-
-      if ( u2_dog_is_pom(veb) ) {
-        u2_noun hed = *u2_at_pom_hed(veb);
-        u2_noun tel = *u2_at_pom_tel(veb);
-
-        mug_w = u2_mug_cell(hed, tel);
-      }
-      else {
-        c3_w len_w = *u2_at_dat_len(&veb_dat);
-
-        mug_w = _mug_words_buf(2166136261, len_w, &veb_dat);
-      }
+      c3_w len_w = *u2_at_dat_len(&veb_dat);
+      c3_w mug_w = _mug_words_buf(2166136261, len_w, &veb_dat);
 
       *u2_at_dat_mug(&veb_dat) = mug_w;
       return mug_w;

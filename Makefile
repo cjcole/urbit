@@ -560,6 +560,12 @@ $(LIBUV):
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(LDFLAGS) -o $(BUILD)/$@ $(SRC)/$^
 
+%.bc: %.c
+	$(CC) -c $(CFLAGS) $(LDFLAGS) -emit-llvm -o $(BUILD)/$@ $(SRC)/$^
+
+%.i: %.c
+	$(CC) -E -c $(CFLAGS) $(LDFLAGS) -o $(BUILD)/$@ $(SRC)/$^
+
 $(BIN)/vere: $(VERE_OFILES) $(LIBUV)
 	mkdir -p $(BIN)
 	$(CLD) $(CLDOSFLAGS) -o $(BIN)/vere $(VERE_OFILES) $(LIBUV) $(LIBS)
