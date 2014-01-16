@@ -3,6 +3,11 @@
 ** This file is in the public domain.
 */
 #include "all.h"
+#ifdef LENG_URBIT_COMPAT
+#include "noun.h"
+#include "heap.h"
+#include "abbrevs.h"
+#else
 #include <sys/uio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -10,6 +15,9 @@
 #include <termios.h>
 #include <uv.h>
 #include "v/vere.h"
+#endif // #ifdef LENG_URBIT_COMPAT
+
+#ifndef LENG_URBIT_COMPAT
 
 /* _loom_stop(): signal handler to stop computation.
 */
@@ -385,6 +393,8 @@ u2_loom_boot(void)
   _loom_start();
 }
 
+#endif // #ifndef LENG_URBIT_COMPAT
+
 /* u2_mean():
 **
 **   Attempt to deconstruct `a` by axis, noun pairs; 0 terminates.
@@ -501,7 +511,7 @@ _frag_word(c3_w a_w, u2_noun b)
       else {
         c3_w x = (1 & (a_w >> (dep_w - 1)));
 
-        b = *u2_at_ray(1 + x + u2_pom_a(b));
+        b = x ? u2_h(b) : u2_t(b);
         dep_w--;
       }
     }
@@ -523,7 +533,7 @@ _frag_deep(c3_w a_w, u2_noun b)
     else {
       c3_w x = (1 & (a_w >> (dep_w - 1)));
 
-      b = *u2_at_ray(1 + x + u2_pom_a(b));
+      b = x ? u2_h(b) : u2_t(b);
       dep_w--;
     }
   }
@@ -535,20 +545,24 @@ _frag_deep(c3_w a_w, u2_noun b)
 static u2_weak
 _frag_phat(u2_noun a, u2_noun b)
 {
-  c3_w len_w = *u2_at_pug_len(a);
+  u2_dat a_dat;
+  u2_crac(a, &a_dat);
+  c3_w len_w = *u2_at_dat_len(&a_dat);
 
-  b = _frag_word(*u2_at_pug_buf(a, (len_w - 1)), b);
+  b = _frag_word(*u2_at_dat_buf(&a_dat, (len_w - 1)), b);
   len_w -= 1;
 
   while ( len_w ) {
-    b = _frag_deep(*u2_at_pug_buf(a, (len_w - 1)), b);
+    b = _frag_deep(*u2_at_dat_buf(&a_dat, (len_w - 1)), b);
 
     if ( u2_none == b ) {
+      u2_seal(&a_dat);
       return b;
     } else {
       len_w--;
     }
   }
+  u2_seal(&a_dat);
   return b;
 }
 
@@ -568,10 +582,10 @@ u2_frag(u2_atom a,
   }
 
   if ( u2_fly_is_cat(a) ) {
-    return _frag_word(a, b);
+    return _frag_word(u2_cat_a(a), b);
   }
   else {
-    if ( !u2_dog_is_pug(a) ) {
+    if ( u2_dog_is_pom(a) ) {
       return u2_none;
     }
     else {
@@ -669,7 +683,7 @@ _mug_bytes(c3_w off_w, c3_w nby_w, c3_y* byt_y)
 }
 
 static __inline__ c3_w
-_mug_words_in_buf(c3_w off_w, c3_w nwd_w, u2_noun veb)
+_mug_words_in_buf(c3_w off_w, c3_w nwd_w, u2_dat *veb)
 {
   if ( 0 == nwd_w ) {
     return off_w;
@@ -677,7 +691,7 @@ _mug_words_in_buf(c3_w off_w, c3_w nwd_w, u2_noun veb)
     c3_w i_w, x_w;
 
     for ( i_w = 0; i_w < (nwd_w - 1); i_w++ ) {
-      x_w = *u2_at_pug_buf(veb, i_w);
+      x_w = *u2_at_dat_buf(veb, i_w);
       {
         c3_y a_y = (x_w & 0xff);
         c3_y b_y = ((x_w >> 8) & 0xff);
@@ -690,7 +704,7 @@ _mug_words_in_buf(c3_w off_w, c3_w nwd_w, u2_noun veb)
         off_w = _mug_fnv(off_w ^ d_y);
       }
     }
-    x_w = *u2_at_pug_buf(veb, (nwd_w - 1));
+    x_w = *u2_at_dat_buf(veb, (nwd_w - 1));
 
     if ( x_w ) {
       off_w = _mug_fnv(off_w ^ (x_w & 0xff));
@@ -775,7 +789,7 @@ _mug_words(c3_w off_w, c3_w nwd_w, const c3_w* wod_w)
 }
 
 static c3_w
-_mug_words_buf(c3_w off_w, c3_w nwd_w, u2_noun veb)
+_mug_words_buf(c3_w off_w, c3_w nwd_w, u2_dat *veb)
 {
   c3_w has_w = _mug_words_in_buf(off_w, nwd_w, veb);
   c3_w out_w = _mug_out(has_w);
@@ -794,12 +808,15 @@ u2_mug(u2_noun veb)
   c3_assert(u2_none != veb);
 
   if ( u2_fly_is_cat(veb) ) {
-    c3_w x_w = veb;
+    c3_w x_w = u2_cat_a(veb);
 
     return _mug_words(2166136261, (veb ? 1 : 0), &x_w);
   } else {
-    if ( *u2_at_dog_mug(veb) ) {
-      c3_w mug_w = *u2_at_dog_mug(veb);
+    u2_dat veb_dat;
+    u2_crac(veb, &veb_dat);
+    
+    if ( *u2_at_dat_mug(&veb_dat) ) {
+      c3_w mug_w = *u2_at_dat_mug(&veb_dat);
 
       return mug_w;
     }
@@ -813,14 +830,16 @@ u2_mug(u2_noun veb)
         mug_w = u2_mug_cell(hed, tel);
       }
       else {
-        c3_w len_w = *u2_at_pug_len(veb);
+        c3_w len_w = *u2_at_dat_len(&veb_dat);
 
-        mug_w = _mug_words_buf(2166136261, len_w, veb);
+        mug_w = _mug_words_buf(2166136261, len_w, &veb_dat);
       }
 
-      *u2_at_dog_mug(veb) = mug_w;
+      *u2_at_dat_mug(&veb_dat) = mug_w;
       return mug_w;
     }
+
+    u2_seal(&veb_dat);
   }
 }
 
@@ -842,7 +861,9 @@ u2_mug_words(const c3_w *buf_w,
 c3_w
 u2_mug_string(const c3_c *a_c)
 {
-  return _mug_bytes(2166136261, strlen(a_c), (c3_y *)a_c);
+  size_t len = strlen(a_c);
+  c3_assert((c3_w)len == len);
+  return _mug_bytes(2166136261, (c3_w)len, (c3_y *)a_c);
 }
 
 /* u2_mug_cell():
@@ -918,29 +939,43 @@ _sing_x(u2_noun a,
         return u2_no;
       }
       else {
-        if ( *u2_at_dog_mug(a) &&
-             *u2_at_dog_mug(b) &&
-             (*u2_at_dog_mug(a) != *u2_at_dog_mug(b)) )
+        u2_dat a_dat;
+        u2_dat b_dat;
+
+        u2_crac(a, &a_dat);
+        u2_crac(b, &b_dat);
+
+        if ( *u2_at_dat_mug(&a_dat) &&
+             *u2_at_dat_mug(&b_dat) &&
+             (*u2_at_dat_mug(&a_dat) != *u2_at_dat_mug(&b_dat)) )
         {
+          u2_seal(&a_dat);
+          u2_seal(&b_dat);
           return u2_no;
         }
         else {
-          c3_w w_rez = *u2_at_pug_len(a);
-          c3_w w_mox = *u2_at_pug_len(b);
+          c3_w w_rez = *u2_at_dat_len(&a_dat);
+          c3_w w_mox = *u2_at_dat_len(&b_dat);
 
           if ( w_rez != w_mox ) {
+            u2_seal(&a_dat);
+            u2_seal(&b_dat);
             return u2_no;
           }
           else {
             c3_w i_w;
 
             for ( i_w = 0; i_w < w_rez; i_w++ ) {
-              if ( (*u2_at_pug_buf(a, i_w)) !=
-                   (*u2_at_pug_buf(b, i_w)) )
+              if ( (*u2_at_dat_buf(&a_dat, i_w)) !=
+                   (*u2_at_dat_buf(&b_dat, i_w)) )
               {
+                u2_seal(&a_dat);
+                u2_seal(&b_dat);
                 return u2_no;
               }
             }
+            u2_seal(&a_dat);
+            u2_seal(&b_dat);
             return u2_yes;
           }
         }
@@ -1154,23 +1189,35 @@ u2_nord(u2_noun a,
           return 2;
         }
         else {
-          c3_w w_rez = *u2_at_pug_len(a);
-          c3_w w_mox = *u2_at_pug_len(b);
+          u2_dat a_dat;
+          u2_dat b_dat;
+
+          u2_crac(a, &a_dat);
+          u2_crac(b, &b_dat);
+
+          c3_w w_rez = *u2_at_dat_len(&a_dat);
+          c3_w w_mox = *u2_at_dat_len(&b_dat);
 
           if ( w_rez != w_mox ) {
+            u2_seal(&a_dat);
+            u2_seal(&b_dat);
             return (w_rez < w_mox) ? _0 : _2;
           }
           else {
             c3_w i_w;
 
             for ( i_w = 0; i_w < w_rez; i_w++ ) {
-              c3_w ai_w = *u2_at_pug_buf(a, i_w);
-              c3_w bi_w = *u2_at_pug_buf(b, i_w);
+              c3_w ai_w = *u2_at_dat_buf(&a_dat, i_w);
+              c3_w bi_w = *u2_at_dat_buf(&b_dat, i_w);
 
               if ( ai_w != bi_w ) {
+                u2_seal(&a_dat);
+                u2_seal(&b_dat);
                 return (ai_w < bi_w) ? _0 : _2;
               }
             }
+            u2_seal(&a_dat);
+            u2_seal(&b_dat);
             return _1;
           }
         }
@@ -1205,7 +1252,9 @@ u2_sing_c(const c3_c* a_c,
     return u2_no;
   }
   else {
-    c3_w w_sof = strlen(a_c);
+    size_t len = strlen(a_c);
+    c3_assert((c3_w)len == len);
+    c3_w w_sof = (c3_w)len;
     c3_w i_w;
 
     for ( i_w = 0; i_w < w_sof; i_w++ ) {
@@ -1474,14 +1523,16 @@ u2_met(c3_y    a_y,
     */
     c3_w gal_w;
     c3_w daz_w;
+    u2_dat b_dat;
 
     if ( u2_fly_is_cat(b) ) {
       gal_w = 0;
-      daz_w = b;
+      daz_w = u2_cat_a(b);
     }
     else {
-      gal_w = (*u2_at_pug_len(b)) - 1;
-      daz_w = (*u2_at_pug_buf(b, gal_w));
+      u2_crac(b, &b_dat);
+      gal_w = (*u2_at_dat_len(&b_dat)) - 1;
+      daz_w = (*u2_at_dat_buf(&b_dat, gal_w));
     }
 
     switch ( a_y ) {
@@ -1496,19 +1547,27 @@ u2_met(c3_y    a_y,
         col_w = c3_bits_word(daz_w);
         bif_w = col_w + (gal_w << 5);
 
+        if ( !u2_fly_is_cat(b) )
+          u2_seal(&b_dat);
         return (bif_w + ((1 << a_y) - 1)) >> a_y;
       }
       case 3: {
+        if ( !u2_fly_is_cat(b) )
+          u2_seal(&b_dat);
         return  (gal_w << 2)
               + ((daz_w >> 24) ? 4 : (daz_w >> 16) ? 3 : (daz_w >> 8) ? 2 : 1);
       }
       case 4: {
+        if ( !u2_fly_is_cat(b) )
+          u2_seal(&b_dat);
         return  (gal_w << 1)
               + ((daz_w >> 16) ? 2 : 1);
       }
       default: {
         c3_y gow_y = (a_y - 5);
 
+        if ( !u2_fly_is_cat(b) )
+          u2_seal(&b_dat);
         return ((gal_w + 1) + ((1 << gow_y) - 1)) >> gow_y;
       }
     }
@@ -1535,13 +1594,17 @@ u2_bit(c3_w    a_w,
   else {
     c3_y vut_y = (a_w & 31);
     c3_w pix_w = (a_w >> 5);
+    u2_dat b_dat;
+    u2_crac(b, &b_dat);
 
-    if ( pix_w >= *u2_at_pug_len(b) ) {
+    if ( pix_w >= *u2_at_dat_len(&b_dat) ) {
+      u2_seal(&b_dat);
       return 0;
     }
     else {
-      c3_w nys_w = *u2_at_pug_buf(b, pix_w);
+      c3_w nys_w = *u2_at_dat_buf(&b_dat, pix_w);
 
+      u2_seal(&b_dat);
       return (1 & (nys_w >> vut_y));
     }
   }
@@ -1567,13 +1630,17 @@ u2_byte(c3_w    a_w,
   else {
     c3_y vut_y = (a_w & 3);
     c3_w pix_w = (a_w >> 2);
+    u2_dat b_dat;
+    u2_crac(b, &b_dat);
 
-    if ( pix_w >= *u2_at_pug_len(b) ) {
+    if ( pix_w >= *u2_at_dat_len(&b_dat) ) {
+      u2_seal(&b_dat);
       return 0;
     }
     else {
-      c3_w nys_w = *u2_at_pug_buf(b, pix_w);
+      c3_w nys_w = *u2_at_dat_buf(&b_dat, pix_w);
 
+      u2_seal(&b_dat);
       return (255 & (nys_w >> (vut_y << 3)));
     }
   }
@@ -1615,7 +1682,9 @@ u2_mp(mpz_t   a_mp,
     mpz_init_set_ui(a_mp, b);
   }
   else {
-    c3_w len_w = *u2_at_pug_len(b);
+    u2_dat b_dat;
+    u2_crac(b, &b_dat);
+    c3_w len_w = *u2_at_dat_len(&b_dat);
 
     /* Slight deficiency in the GMP API.
     */
@@ -1629,10 +1698,12 @@ u2_mp(mpz_t   a_mp,
       c3_w i_w;
 
       for ( i_w=0; i_w < len_w; i_w++ ) {
-        buf_w[i_w] = *u2_at_pug_buf(b, i_w);
+        buf_w[i_w] = *u2_at_dat_buf(&b_dat, i_w);
       }
       mpz_import(a_mp, len_w, -1, 4, 0, 0, buf_w);
     }
+
+    u2_seal(&b_dat);
   }
 }
 
@@ -1651,13 +1722,20 @@ u2_word(c3_w    a_w,
     if ( a_w > 0 ) {
       return 0;
     }
-    else return b;
+    else return u2_cat_a(b);
   }
   else {
-    if ( a_w >= *u2_at_pug_len(b) ) {
+    u2_dat b_dat;
+    u2_crac(b, &b_dat);
+    if ( a_w >= *u2_at_dat_len(&b_dat) ) {
+      u2_seal(&b_dat);
       return 0;
     }
-    else return *u2_at_pug_buf(b, a_w);
+    else {
+      c3_w w = *u2_at_dat_buf(&b_dat, a_w);
+      u2_seal(&b_dat);
+      return w;
+    }
   }
 }
 
@@ -1715,6 +1793,9 @@ u2_chop(c3_g    met_g,
   c3_assert(u2_none != src);
   c3_assert(u2_fly_is_atom(src));
 
+  u2_dat src_dat;
+  u2_crac(src, &src_dat);
+
   if ( met_g < 5 ) {
     c3_w san_w = (1 << met_g);
     c3_w mek_w = ((1 << san_w) - 1);
@@ -1730,7 +1811,7 @@ u2_chop(c3_g    met_g,
       c3_g rat_g = (bat_w & 31);
       c3_w hop_w;
 
-      hop_w = u2_atom_word(src, waf_w);
+      hop_w = u2_dat_word(&src_dat, waf_w);
       hop_w = (hop_w >> raf_g) & mek_w;
 
       *u2_at_ray(dst_r + wat_w) ^= (hop_w << rat_g);
@@ -1740,7 +1821,7 @@ u2_chop(c3_g    met_g,
     }
   }
   else {
-    c3_w len_w = (u2_fly_is_cat(src) ? 1 : *u2_at_pug_len(src));
+    c3_w len_w = *u2_at_dat_len(&src_dat);
     c3_g hut_g = (met_g - 5);
     c3_w san_w = (1 << hut_g);
     c3_w j_w;
@@ -1753,8 +1834,10 @@ u2_chop(c3_g    met_g,
         *u2_at_ray(dst_r + wut_w + j_w) ^=
             ((wuf_w + j_w) >= len_w)
               ? 0
-              : u2_atom_word(src, wuf_w + j_w);
+              : u2_dat_word(&src_dat, wuf_w + j_w);
       }
     }
   }
+
+  u2_seal(&src_dat);
 }

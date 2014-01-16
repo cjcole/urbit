@@ -29,9 +29,14 @@
 
         u2_chop(5, 0, lna_w, 0, sal_r, a);
 
+        u2_dat b_dat;
+        u2_crac(b, &b_dat);
+
         for ( i_w = 0; i_w < lnb_w; i_w++ ) {
-          *u2_at_ray(sal_r + i_w) ^= u2_atom_word(b, i_w);
+          *u2_at_ray(sal_r + i_w) ^= u2_dat_word(&b_dat, i_w);
         }
+
+        u2_seal(&b_dat);
         return u2_rl_malt(wir_r, sal_r);
       }
     }

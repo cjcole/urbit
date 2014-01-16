@@ -2,6 +2,10 @@
 **
 ** This file is in the public domain.
 */
+#ifdef LENG_URBIT_COMPAT
+#include "leng-coal.h"
+#endif
+
   /** coal.h: common noun substrate.
   ***
   *** Generally modeled on stage 223, but ideally isolated from it.
@@ -17,8 +21,9 @@
  
   /** Globals.
   **/
+#ifndef LENG_URBIT_COMPAT
     c3_global u2_ray u2_Wire;                 //  __thread or equivalent
-
+#endif
 
   /** Aliases - selective and syntactically unique.
   **/

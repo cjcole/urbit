@@ -16,7 +16,7 @@
       return u2_bl_bail(wir_r, c3__fail);
     }
     else {
-      c3_g   a_g = a;
+      c3_g   a_g = (c3_g)u2_cat_a(a);
       c3_w   tot_w = 0;
       u2_ray sal_r;
      
@@ -38,10 +38,10 @@
           {
             return u2_bl_bail(wir_r, c3__fail);
           }
-          else if ( (tot_w + pi_cab) < tot_w ) {
+          else if ( (tot_w + u2_cat_a(pi_cab)) < tot_w ) {
             return u2_bl_bail(wir_r, c3__fail);
           }
-          tot_w += pi_cab;
+          tot_w += u2_cat_a(pi_cab);
           cab = u2_t(cab); 
         }
         if ( 0 == tot_w ) {
@@ -61,9 +61,10 @@
         while ( _0 != cab ) {
           u2_noun i_cab = u2_h(cab);
           u2_atom pi_cab = u2_h(i_cab);
+          c3_assert(u2_fly_is_cat(pi_cab));
           u2_atom qi_cab = u2_t(i_cab);
 
-          u2_chop(a_g, 0, pi_cab, pos_w, sal_r, qi_cab);
+          u2_chop(a_g, 0, u2_cat_a(pi_cab), pos_w, sal_r, qi_cab);
           pos_w += pi_cab;
           cab = u2_t(cab);
         }

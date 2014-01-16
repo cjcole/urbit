@@ -14,20 +14,20 @@
                    u2_atom c,                                     //  retain
                    u2_atom d)                                     //  retain
   {
-    if ( !(u2_fly_is_cat(a) && u2_cat_is_kit(a)) || (a >= 32) ) {
+    if ( !(u2_fly_is_cat(a)) || (a >= 32) ) {
       return u2_bl_bail(wir_r, c3__fail);
     }
-    if ( !(u2_fly_is_cat(b) && u2_cat_is_kit(b)) ) {
+    if ( !(u2_fly_is_cat(b)) ) {
       return _0;
     }
-    if ( !(u2_fly_is_cat(c) && u2_cat_is_kit(c)) ) {
-      c = u2_kit_max;
+    if ( !(u2_fly_is_cat(c)) ) {
+      c = 0x7fffffff;
     }
 
     {
-      c3_g a_g   = (c3_g)u2_kit(a);
-      c3_w b_w   = u2_kit(b);
-      c3_w c_w   = u2_kit(c);
+      c3_g a_g   = (c3_g)u2_cat_a(a);
+      c3_w b_w   = u2_cat_a(b);
+      c3_w c_w   = u2_cat_a(c);
       c3_w len_w = u2_met(a_g, d);
 
       if ( (_0 == c_w) || (b_w >= len_w) ) {

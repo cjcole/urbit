@@ -20,8 +20,8 @@
       return u2_bl_bail(wir_r, c3__fail);
     }
     else {
-      c3_g a_g   = a;
-      c3_w b_w   = b;
+      c3_g a_g   = (c3_g)u2_cat_a(a);
+      c3_w b_w   = u2_cat_a(b);
       c3_w len_w = u2_met(a_g, c);
 
       if ( _0 == len_w ) {

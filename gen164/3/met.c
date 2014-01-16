@@ -18,12 +18,13 @@
       } else return _1;
     }
     else {
-      c3_w met_w = u2_met(a, b);
+      c3_y a_y = (c3_y)u2_cat_a(a);
+      c3_w met_w = u2_met(a_y, b);
 
       if ( !u2_fly_is_cat(met_w) ) {
         return u2_rl_words(wir_r, 1, &met_w);
       }
-      else return u2_met(a, b);
+      else return u2_met(a_y, b);
     }
   }
   u2_weak                                                         //  transfer
