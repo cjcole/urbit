@@ -147,6 +147,12 @@
       **
       ** Not referenced as such, since in ray space.
       */
+#ifndef LENG_URBIT_COMPAT
+        typedef struct _u2_dat {
+          u2_pug pug;
+        } u2_dat;
+#endif
+
         typedef struct _u2_loom_atom {
           c3_w mug_w;
           c3_w len_w;
@@ -283,6 +289,37 @@
 
 #     define u2_atom_word(a, b) \
         ( u2_fly_is_cat(a) ? (b ? 0 : (a)) : *u2_at_pug_buf(a, b) )
+
+      static inline c3_w u2_cat_a(u2_fly cat) {
+        return cat;
+      }
+
+      static inline void u2_crac(u2_fly pug, u2_dat *dat) {
+        dat->pug = pug;
+      }
+
+      static inline void u2_seal(u2_dat *dat) {
+      }
+
+      static inline u2_fly u2_dat_noun(u2_dat *dat) {
+        return dat->pug;
+      }
+
+      static inline c3_w *u2_at_dat_mug(u2_dat *dat) {
+        return u2_at_dog_mug(dat->pug);
+      }
+
+      static inline c3_w *u2_at_dat_len(u2_dat *dat) {
+        return u2_at_pug_len(dat->pug);
+      }
+
+      static inline c3_w *u2_at_dat_buf(u2_dat *dat, c3_w index) { 
+        return u2_at_pug_buf(dat->pug, index);
+      }
+
+      static inline c3_w u2_dat_word(u2_dat *dat, c3_w index) { 
+        return *u2_at_dat_buf(dat, index);
+      }
 #endif // #ifndef LENG_URBIT_COMPAT
 
     /*** Word axis macros.
