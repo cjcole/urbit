@@ -11,73 +11,87 @@
 
   static u2_noun                                                  //  produce
   _cue_in(u2_wire wir_r,
-          u2_atom a,                                              //  retain
-          u2_atom b,                                              //  retain
-          u2_noun m)                                              //  retain
+          u2_atom _a,                                              //  retain
+          u2_atom _b,                                              //  retain
+          u2_noun _m)                                              //  retain
   {
-    u2_noun p, q, r;
+    u2_bag a, b, m;
+    u2_fill(&a, _a);
+    u2_fill(&b, _b);
+    u2_fill(&m, _m);
 
-    if ( _0 == j2_mbc(Pt3, cut)(wir_r, 0, b, 1, a) ) {
-      u2_noun x = j2_mbc(Pt1, inc)(wir_r, b);
-      u2_noun c = j2_mby(Pt5, rub)(wir_r, x, a);
+    u2_bag p, q, r;
 
-      p = j2_mbc(Pt1, inc)(wir_r, u2_h(c));
-      q = u2_rx(wir_r, u2_t(c));
+    if ( _0 == j2_mbc(Pt3, cut)(wir_r, 0, b.n, 1, a.n) ) {
+      u2_bag x, c;
+
+      u2_fill(&x, j2_mbc(Pt1, inc)(wir_r, b.n));
+      u2_fill(&c, j2_mby(Pt5, rub)(wir_r, x.n, a.n));
+
+      u2_fill(&p, j2_mbc(Pt1, inc)(wir_r, u2_h(c.n)));
+      u2_fill(&q, u2_rx(wir_r, u2_t(c.n)));
       // q = u2_cs_save(wir_r, T_r, 0, b, q);
-      r = j2_mcc(Pt4, by, put)(wir_r, m, b, u2_t(c));
+      u2_fill(&r, j2_mcc(Pt4, by, put)(wir_r, m.n, b.n, u2_t(c.n)));
 
-      u2_rz(wir_r, c);
-      u2_rz(wir_r, x);
+      u2_rz(wir_r, c.n); u2_rz(wir_r, x.n); 
+      u2_empty(&c); u2_empty(&x);
     }
     else {
-      u2_noun c = j2_mbc(Pt1, add)(wir_r, _2, b);
-      u2_noun l = j2_mbc(Pt1, inc)(wir_r, b);
+      u2_bag c, l;
+      u2_fill(&c, j2_mbc(Pt1, add)(wir_r, _2, b.n));
+      u2_fill(&l, j2_mbc(Pt1, inc)(wir_r, b.n));
 
-      if ( _0 == j2_mbc(Pt3, cut)(wir_r, 0, l, 1, a) ) {
-        u2_noun u, v, w;
-        u2_noun x, y;
+      if ( _0 == j2_mbc(Pt3, cut)(wir_r, 0, l.n, 1, a.n) ) {
+        u2_bag u, v, w;
+        u2_bag x, y;
 
-        u = _cue_in(wir_r, a, c, m);
-        x = j2_mbc(Pt1, add)(wir_r, u2_h(u), c);
-        v = _cue_in(wir_r, a, x, u2_t(u2_t(u)));
+        u2_fill(&u, _cue_in(wir_r, a.n, c.n, m.n));
+        u2_fill(&x, j2_mbc(Pt1, add)(wir_r, u2_h(u.n), c.n));
+        u2_fill(&v, _cue_in(wir_r, a.n, x.n, u2_t(u2_t(u.n))));
 
-        w = u2_bc(wir_r, u2_rx(wir_r, u2_h(u2_t(u))), 
-                         u2_rx(wir_r, u2_h(u2_t(v))));
+        u2_fill(&w, u2_bc(wir_r, u2_rx(wir_r, u2_h(u2_t(u.n))), 
+                          u2_rx(wir_r, u2_h(u2_t(v.n)))));
 
-        y = j2_mbc(Pt1, add)(wir_r, u2_h(u), u2_h(v));
+        u2_fill(&y, j2_mbc(Pt1, add)(wir_r, u2_h(u.n), u2_h(v.n)));
 
-        p = j2_mbc(Pt1, add)(wir_r, _2, y);
-        q = w;
+        u2_fill(&p, j2_mbc(Pt1, add)(wir_r, _2, y.n));
+        u2_fill(&q, w.n);
         // q = u2_cs_save(wir_r, T_r, 0, b, w);
-        r = j2_mcc(Pt4, by, put)(wir_r, u2_t(u2_t(v)), b, w);
+        u2_fill(&r, j2_mcc(Pt4, by, put)(wir_r, u2_t(u2_t(v.n)), b.n, w.n));
 
-        u2_rz(wir_r, u); u2_rz(wir_r, v); u2_rz(wir_r, x); u2_rz(wir_r, y);
+        u2_rz(wir_r, u.n); u2_rz(wir_r, v.n);
+        u2_rz(wir_r, x.n); u2_rz(wir_r, y.n);
+        u2_empty(&u); u2_empty(&v); u2_empty(&w); 
+        u2_empty(&x); u2_empty(&y);
       }
       else {
-        u2_noun d = j2_mby(Pt5, rub)(wir_r, c, a);
-        u2_noun x = j2_mcc(Pt4, by, get)(wir_r, m, u2_t(d));
+        u2_bag d, x;
+        u2_fill(&d, j2_mby(Pt5, rub)(wir_r, c.n, a.n));
+        u2_fill(&x, j2_mcc(Pt4, by, get)(wir_r, m.n, u2_t(d.n)));
         // u2_weak T = u2_cs_find(wir_r, T_r, 0, u2_t(d));
 
-        p = j2_mbc(Pt1, add)(wir_r, _2, u2_h(d));
-        if ( u2_nul == x ) {
+        u2_fill(&p, j2_mbc(Pt1, add)(wir_r, _2, u2_h(d.n)));
+        if ( u2_nul == x.n ) {
           return u2_bl_bail(wir_r, c3__exit);
         }
 #if 0
-        else if ( (u2_none == T) || (u2_no == u2_sing(T, x)) ) {
+        else if ( (u2_none == T) || (u2_no == u2_sing(T, x.n)) ) {
           printf("fail!\n");
           return u2_bl_bail(wir_r, c3__fail);
         }
 #endif
-        q = u2_rx(wir_r, u2_t(x));
-        r = u2_rx(wir_r, m);
+        u2_fill(&q, u2_rx(wir_r, u2_t(x.n)));
+        u2_fill(&r, u2_rx(wir_r, m.n));
 
-        u2_rz(wir_r, x);
-        u2_rz(wir_r, d);
+        u2_rz(wir_r, x.n); u2_rz(wir_r, d.n);
+        u2_empty(&x); u2_empty(&d);
       }
-      u2_rz(wir_r, l);
-      u2_rz(wir_r, c);
+      u2_rz(wir_r, l.n); u2_rz(wir_r, c.n);
+      u2_empty(&l); u2_empty(&c);
     }
-    return u2_bt(wir_r, p, q, r);
+    u2_noun result = u2_bt(wir_r, p.n, q.n, r.n);
+    u2_empty(&p); u2_empty(&q); u2_empty(&r);
+    return result;
   }
 
   u2_noun                                                         //  transfer

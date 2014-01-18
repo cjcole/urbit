@@ -151,6 +151,10 @@
         typedef struct _u2_dat {
           u2_pug pug;
         } u2_dat;
+
+        typedef struct _u2_bag {
+          u2_fly n;
+        } u2_bag;
 #endif
 
         typedef struct _u2_loom_atom {
@@ -319,6 +323,13 @@
 
       static inline c3_w u2_dat_word(u2_dat *dat, c3_w index) { 
         return *u2_at_dat_buf(dat, index);
+      }
+
+      static inline void u2_fill(u2_bag *bag, u2_fly n) { 
+        bag->n = n;
+      }
+
+      static inline void u2_empty(u2_bag *bag) { 
       }
 #endif // #ifndef LENG_URBIT_COMPAT
 
